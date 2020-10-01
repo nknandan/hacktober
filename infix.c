@@ -78,7 +78,7 @@ void infoxToPostfix(char infix[], char postfix[]) {
 
 int main() {
     /* Enter your code here. Read input from STDIN. Print output to STDOUT */
-    char infix[100], postfix[100];
+    char infix[100], postfix[100],chokli;
     int size;
     scanf("%d",&size);
     scanf("%s",infix);
