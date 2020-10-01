@@ -3,109 +3,85 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include<ctype.h>
 
 typedef struct {
-    char a[50];
+    /* Declare your stack here */
+    char arr[40];
 } Stack;
 
 Stack s;
-//top -1 aakk
-int top=0;
+int top = -1;
 
-int isOperand(char a)
-{
-    return ( a >= 'a' && a <= 'z' ) || ( a >= 'A' && a <= 'Z' );
-}
-
-int prec(char a)
-{
-    switch(a)
-    {
-        case '+':
-        case '-':
-            return 1;
-        case '*':
-        case '/':
-            return 2;
-    }
-    return -1;
-}
-
-
-void push(char n) {
-
-    top++;
-    s.a[top]=n;
-
+void push(char ch) {
+    s.arr[++top] = ch;
 }
 
 char pop() {
-
-    top--;
-    return s.a[top+1];
+    char temp;
+    temp = s.arr[top--];
+    return temp;
 }
 
+int is_operator(char ch) {
+    if(ch == '+'||ch == '-'||ch == '*'||ch == '/')
+        return 1;
+    else
+        return 0;
+}
 
+int precedence(char ch) {
+    if(ch == '/' ||ch == '*')
+        return 2;
+    else if(ch == '+'||ch == '-')
+        return 1;
+    else
+        return 0;
+}
 
+void infoxToPostfix(char infix[], char postfix[]) {
+    int i = 0, j = 0;
+    char x,item;
+    push('(');
+    strcat(infix, ")");
+    item = infix[i];
 
+    while (item != '\0') {
+        if(item == '(') {
+            push(item);
+        }
+        else if(isdigit(item)||isalpha(item)) {
+            postfix[j++] = item;
+        }
+        else if(is_operator(item)) {
+            x = pop();
+            while(is_operator(x) && precedence(x) >= precedence(item)) {
+                postfix[j++] = x;
+                x = pop();
+            }
+            push(x);
+            push(item);
+        }
+        else if(item == ')') {
+            x = pop();
+            while (x != '(') {
+                postfix[j++] = x;
+                x = pop();
+            }
+        }
+        i++;
+        item = infix[i];
+    }
+    postfix[j] = '\0';
+    printf("%s",postfix);
+}
 
 int main() {
-    int n,i,j;
-    char st[50],a;
-    scanf("%d",&n);
-    scanf(" %[^\n] ", st);
-    for(i=0;i<n;i++)
-    {
-        if(isOperand(st[i]))
-        {
-            printf("%c",st[i]);
-        }
-        else if(st[i]=='(')
-        {
-            push(st[i]);
-        }
-        else if(st[i]==')')
-        {
-            while(s.a[top]!='(')
-            {
-                a=pop();
-                printf("%c",a);
-            }
-            pop();
-        }
-        else
-        {
-            if(top==-1 || s.a[top]=='(')
-                push(st[i]);
-            else if(prec(st[i])>prec(s.a[top]))
-                push(st[i]);
-            else if(prec(st[i])==prec(s.a[top]))
-            {
-                a=pop();
-                printf("%c",a);
-                push(st[i]);
-            }
-            else
-            {
-                while(prec(st[i])<prec(s.a[top]))
-                {
-                    a=pop();
-                    printf("%c",a);
-                }
-                if(prec(st[i])>prec(s.a[top]))
-                    push(st[i]);
-                else
-                {
-                    printf("%c",pop(s));
-                    push(st[i]);
-                }
-            }
-        }
-    }
-    while(top!=-1)
-    {
-        a=pop();
-        printf("%c",a);
-    }
+    /* Enter your code here. Read input from STDIN. Print output to STDOUT */
+    char infix[100], postfix[100];
+    int size;
+    scanf("%d",&size);
+    scanf("%s",infix);
+    infoxToPostfix(infix, postfix);
     return 0;
 }
